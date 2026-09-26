@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pencatat Keuangan Elegan</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --accent-warning: #f59e0b;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glow-color: rgba(99, 102, 241, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        /* Layout Grid Utama */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Glow Tipis & Efek Close-Up (Hover Zoom) */
+        .box {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px var(--glow-color);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .box:hover {
+            transform: scale(1.03) translateY(-4px); /* Efek Close-up */
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4); /* Glow Tipis */
+        }
+
+        .interactive-box {
+            cursor: pointer;
+        }
+
+        .box h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .box .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        /* Kotak Pindai Struk (Kanan) */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 240px;
+        }
+
+        .scan-icon {
+            font-size: 3.2rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-main);
+            box-shadow: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.25);
+            box-shadow: none;
+        }
+
+        /* Section Catatan */
+        .notes-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px var(--glow-color);
+            transition: all 0.35s ease;
+        }
+
+        .notes-section:hover {
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .transaction-list {
+            list-style: none;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .transaction-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+        }
+
+        .amount-expense {
+            color: var(--accent-red);
+        }
+
+        /* Pop-up / Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 28px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h3 {
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: white;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Pop-up Alert Peringatan */
+        .alert-card {
+            border-color: var(--accent-warning);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+            text-align: center;
+        }
+
+        .alert-icon {
+            font-size: 3rem;
+            color: var(--accent-warning);
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>DompetKu</h1>
+            <p id="current-date-label">Memuat tanggal...</p>
+        </header>
+
+        <!-- Layout Utama -->
+        <div class="dashboard-grid">
+            <!-- Kolom Kiri -->
+            <div class="left-column">
+                <!-- Kotak Uang Harian -->
+                <div class="box interactive-box" onclick="openAllowanceModal()">
+                    <h3>Uang Harian (Live 1/24h)</h3>
+                    <div class="value" id="display-allowance">0</div>
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">Klik untuk kustomisasi / atur nominal</small>
+                </div>
+                <!-- Kotak Total Pengeluaran -->
+                <div class="box">
+                    <h3>Total Pengeluaran Hari Ini</h3>
+                    <div class="value amount-expense" id="display-expense">0</div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Pindai Struk / Nota -->
+            <div class="box right-column">
+                <div class="scan-icon">📷</div>
+                <h3>Pindai Struk / Nota</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px 0;">Deteksi otomatis nominal bayar dari kamera</p>
+                <input type="file" id="receiptInput" accept="image/*" capture="environment" onchange="processReceipt(event)">
+                <button class="btn" onclick="document.getElementById('receiptInput').click()">Buka Kamera / Pilih Foto</button>
+                <button class="btn btn-secondary" style="margin-top: 10px; padding: 8px 16px; font-size: 0.8rem;" onclick="openManualExpenseModal()">Input Manual (Tanpa Nota)</button>
+            </div>
+        </div>
+
+        <!-- Daily / Monthly Note -->
+        <div class="notes-section">
+            <div class="notes-header">
+                <h3 id="note-section-title">Daily Note (Hari ke-1)</h3>
+                <span id="note-status" style="font-size: 0.85rem; color: var(--accent-green);">● Live System</span>
+            </div>
+            <ul class="transaction-list" id="transaction-list">
+                <li style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada transaksi hari ini.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Pop-up Input Uang Harian -->
+    <div class="modal" id="allowanceModal">
+        <div class="modal-content">
+            <h3>Atur Uang Harian</h3>
+            <div class="form-group">
+                <label for="inputAllowanceValue">Nominal Uang Harian</label>
+                <input type="text" id="inputAllowanceValue" class="form-control" placeholder="Atur nominal (Contoh: 50.000)" oninput="formatInputRupiah(this)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeAllowanceModal()">Batal</button>
+                <button class="btn" onclick="saveAllowance()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up Input Pengeluaran Manual -->
+    <div class="modal" id="manualExpenseModal">
+        <div class="modal-content">
+            <h3>Input Pengeluaran</h3>
+            <div class="form-group">
+                <label for="expenseTitle">Keterangan Pengeluaran</label>
+                <input type="text" id="expenseTitle" class="form-control" placeholder="Contoh: Makan Siang">
+            </div>
+            <div class="form-group">
+                <label for="expenseValue">Nominal Pembayaran</label>
+                <input type="text" id="expenseValue" class="form-control" placeholder="Contoh: 15.000" oninput="formatInputRupiah(this)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeManualExpenseModal()">Batal</button>
+                <button class="btn" onclick="saveManualExpense()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up Alert Peringatan (Sisa Uang <= Rp 15.000) -->
+    <div class="modal" id="warningAlertModal">
+        <div class="modal-content alert-card">
+            <div class="alert-icon">⚠️</div>
+            <h3 style="color: var(--accent-warning);">Peringatan Uang Harian!</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin: 12px 0 20px 0;" id="alertMessageText">
+                Sisa uang harian kamu saat ini menyentuh <strong id="alertAmountText" style="color: white;">15.000</strong>. Harap hemat pengeluaran!
+            </p>
+            <button class="btn" style="background: var(--accent-warning); width: 100%;" onclick="closeAlertModal()">Saya Mengerti</button>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi Data: allowance diawali dari 0
+        let appData = JSON.parse(localStorage.getItem('dompetKuDataV3')) || {
+            date: '',
+            dayCount: 1,
+            allowance: 0,
+            expenses: [],
+            historyNotes: [],
+            alertShownToday: false
+        };
+
+        // Format Angka Ribuan Rupiah (Titik sebagai pemisah)
+        function formatRupiahNumber(val) {
+            if (!val && val !== 0) return '0';
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Parse Angka dari String Format Titik
+        function parseRupiahNumber(str) {
+            return parseFloat(str.replace(/\./g, '')) || 0;
+        }
+
+        // Auto-format saat mengetik nominal
+        function formatInputRupiah(input) {
+            let rawVal = input.value.replace(/[^0-9]/g, '');
+            input.value = rawVal ? formatRupiahNumber(rawVal) : '';
+        }
+
+        // Render Tanggal & Logika Rollover Sisa Uang
+        function updateHeaderDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const todayStr = new Date().toLocaleDateString('id-ID', options);
+            document.getElementById('current-date-label').innerText = todayStr;
+
+            if (appData.date !== todayStr) {
+                if (appData.date !== '') {
+                    processRollover(todayStr);
+                } else {
+                    appData.date = todayStr;
+                    saveData();
+                }
+            }
+        }
+
+        function processRollover(newDateStr) {
+            let totalExp = appData.expenses.reduce((acc, curr) => acc + curr.nominal, 0);
+            let sisaKemarin = appData.allowance - totalExp;
+            if (sisaKemarin < 0) sisaKemarin = 0;
+
+            appData.historyNotes.push({
+                day: appData.dayCount,
+                date: appData.date,
+                allowance: appData.allowance,
+                expenses: [...appData.expenses],
+                sisa: sisaKemarin
+            });
+
+            appData.date = newDateStr;
+            appData.dayCount += 1;
+            appData.allowance = sisaKemarin; // Sisa kemarin dipindahkan ke hari baru
+            appData.expenses = [];
+            appData.alertShownToday = false;
+            saveData();
+            updateUI();
+        }
+
+        function updateUI() {
+            let totalExp = appData.expenses.reduce((acc, curr) => acc + curr.nominal, 0);
+            let liveAllowance = appData.allowance - totalExp;
+
+            document.getElementById('display-allowance').innerText = formatRupiahNumber(liveAllowance);
+            document.getElementById('display-expense').innerText = formatRupiahNumber(totalExp);
+
+            // Cek Trigger Alert Uang Harian <= 15.000 (hanya jika ada set pasokan awal)
+            if (appData.allowance > 0) {
+                checkWarningAlert(liveAllowance);
+            }
+
+            // Subtitle Daily / Monthly Note
+            if (appData.dayCount <= 30) {
+                document.getElementById('note-section-title').innerText = `Daily Note (Hari ke-${appData.dayCount})`;
+            } else {
+                document.getElementById('note-section-title').innerText = `Monthly Note`;
+            }
+
+            // Render List Transaksi
+            const listEl = document.getElementById('transaction-list');
+            if (appData.expenses.length === 0) {
+                listEl.innerHTML = `<li style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada transaksi hari ini.</li>`;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            appData.expenses.slice().reverse().forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'transaction-item';
+                li.innerHTML = `
+                    <div>
+                        <div class="transaction-title">${item.title}</div>
+                        <div class="transaction-date">${item.time}</div>
+                    </div>
+                    <div class="transaction-amount amount-expense">- ${formatRupiahNumber(item.nominal)}</div>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        // Live Alert jika Sisa Uang <= Rp 15.000
+        function checkWarningAlert(sisaUang) {
+            if (sisaUang <= 15000 && !appData.alertShownToday) {
+                document.getElementById('alertAmountText').innerText = formatRupiahNumber(sisaUang);
+                document.getElementById('warningAlertModal').style.display = 'flex';
+                appData.alertShownToday = true;
+                saveData();
+            }
+        }
+
+        function closeAlertModal() {
+            document.getElementById('warningAlertModal').style.display = 'none';
+        }
+
+        function saveData() {
+            localStorage.setItem('dompetKuDataV3', JSON.stringify(appData));
+        }
+
+        // Modal Handlers
+        function openAllowanceModal() {
+            document.getElementById('allowanceModal').style.display = 'flex';
+        }
+        function closeAllowanceModal() {
+            document.getElementById('allowanceModal').style.display = 'none';
+        }
+        function saveAllowance() {
+            const rawVal = document.getElementById('inputAllowanceValue').value;
+            const val = parseRupiahNumber(rawVal);
+            if (val >= 0) {
+                appData.allowance = val; // Mengatur / Mengkustomisasi Uang Harian
+                saveData();
+                updateUI();
+                closeAllowanceModal();
+                document.getElementById('inputAllowanceValue').value = '';
+            }
+        }
+
+        function openManualExpenseModal() {
+            document.getElementById('manualExpenseModal').style.display = 'flex';
+        }
+        function closeManualExpenseModal() {
+            document.getElementById('manualExpenseModal').style.display = 'none';
+        }
+        function saveManualExpense() {
+            const title = document.getElementById('expenseTitle').value.trim();
+            const rawVal = document.getElementById('expenseValue').value;
+            const nominal = parseRupiahNumber(rawVal);
+            
+            if (title && nominal > 0) {
+                const timeNow = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                appData.expenses.push({ title, nominal, time: timeNow });
+                saveData();
+                updateUI();
+                closeManualExpenseModal();
+                document.getElementById('expenseTitle').value = '';
+                document.getElementById('expenseValue').value = '';
+            }
+        }
+
+        // Simulasi Kamera Pindai Nota Belanja
+        function processReceipt(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            alert("Memindai nota belanja dengan kamera...");
+            
+            setTimeout(() => {
+                const simulatedTotal = (Math.floor(Math.random() * 8) + 1) * 4000;
+                const timeNow = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
+                appData.expenses.push({
+                    title: "Scan Struk Nota",
+                    nominal: simulatedTotal,
+                    time: timeNow
+                });
+
+                saveData();
+                updateUI();
+                alert(`Nota berhasil dipindai! Total pembayaran: ${formatRupiahNumber(simulatedTotal)} telah tercatat.`);
+            }, 1200);
+        }
+
+        window.onload = function() {
+            updateHeaderDate();
+            updateUI();
+        };
+    </script>
+</body>
+</html>
